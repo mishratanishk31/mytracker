@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Expense Tracker V6 · Smart Insights</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a0705">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Expenses">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{--bg:#f7f3ee;--card:#fff;--tx:#1b1410;--mu:#7a6a5c;--bd:#eadfd3;--ac:#e8590c;--ac2:#f59e0b;--ok:#16a34a;--bad:#dc2626;--in:#fbf7f2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0705;--card:#14100c;--tx:#fff3e3;--mu:#a8957f;--bd:#2a2018;--ac:#ff9f1c;--ac2:#ffc857;--in:#0d0a07;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#0a0705;--card:#14100c;--tx:#fff3e3;--mu:#a8957f;--bd:#2a2018;--ac:#ff9f1c;--ac2:#ffc857;--in:#0d0a07;--ok:#4ade80;--bad:#f87171}
+*{box-sizing:border-box;margin:0}html,body{min-height:100%}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:20px 16px 60px}
+.wrap{max-width:960px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+h1{font-size:1.6rem;letter-spacing:-.03em}h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+input,select,button{font:inherit;color:inherit}input,select{background:var(--in);border:1px solid var(--bd);border-radius:10px;padding:.6rem .8rem;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--ac)}button{cursor:pointer;border:0;background:none}
+.btn{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#1b0f02;font-weight:700;border-radius:10px;padding:.65rem 1.1rem}
+.btn.g{background:transparent;border:1px solid var(--bd);color:var(--tx);font-weight:500}.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px}.card small{color:var(--mu);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.big{font-size:1.9rem;font-weight:800;letter-spacing:-.03em;margin-top:2px}
+.bar{height:8px;border-radius:8px;background:var(--bd);overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;width:0;background:var(--ok);border-radius:8px;transition:width .6s,background .3s}
+.two{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;align-items:start}form.add{display:grid;grid-template-columns:1fr 1fr;gap:10px}form.add .full{grid-column:1/-1}
+label{font-size:.72rem;color:var(--mu);display:block;margin-bottom:3px}
+.donut{width:150px;height:150px;border-radius:50%;margin:6px auto 14px;display:grid;place-items:center;background:var(--bd)}
+.donut div{width:98px;height:98px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center;font-size:.72rem;color:var(--mu)}
+.donut b{display:block;color:var(--tx);font-size:1rem}.leg{display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}.chips button{border:1px solid var(--bd);border-radius:999px;padding:.28rem .75rem;font-size:.78rem;color:var(--mu)}
+.chips button.on{background:var(--ac);border-color:var(--ac);color:#1b0f02;font-weight:700}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:1.2rem;flex:none}
+.row div.t{flex:1;min-width:0}.row b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row small{color:var(--mu);font-size:.75rem}
+.row .a{font-weight:700;white-space:nowrap}.row .x{color:var(--mu);padding:5px 7px;border-radius:8px}.row .x:hover{color:var(--bad)}
+.row .edit{color:var(--mu);padding:5px 7px;border-radius:8px}.row .edit:hover{color:var(--ac)}
+.tip{background:var(--in);border:1px dashed var(--bd);border-radius:12px;padding:.7rem .9rem;font-size:.85rem;color:var(--mu);margin-bottom:14px}
+.empty{text-align:center;color:var(--mu);padding:26px 0}.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--tx);color:var(--bg);padding:.6rem 1rem;border-radius:10px;font-size:.85rem;transition:.3s;pointer-events:none;z-index:5}
+.toast.on{opacity:1;transform:translate(-50%,0)}.muted{color:var(--mu);font-size:.8rem}.section-title{display:flex;justify-content:space-between;gap:10px;align-items:center}
+#search{margin:10px 0 2px}.form-actions{display:flex;gap:8px}.form-actions button{flex:1}
+
+.panel{margin:14px 0}
+.panel h2{font-size:1.05rem;margin-bottom:4px}
+.report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mini{background:var(--in);border:1px solid var(--bd);border-radius:12px;padding:12px}
+.mini small{display:block;color:var(--mu);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.mini b{font-size:1.15rem}
+.report-table{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:10px}
+.report-table th,.report-table td{padding:9px 7px;border-bottom:1px solid var(--bd);text-align:right}
+.report-table th:first-child,.report-table td:first-child{text-align:left}
+.report-table th{color:var(--mu);font-weight:600}
+.goal-form{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:8px;align-items:end;margin:12px 0}
+.goal{padding:12px 0;border-bottom:1px solid var(--bd)}
+.goal:last-child{border:0}
+.goal-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.goal-top b{overflow-wrap:anywhere}
+.goal-progress{height:9px;background:var(--bd);border-radius:99px;overflow:hidden;margin:9px 0 5px}
+.goal-progress i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:99px}
+.goal-controls{display:flex;gap:7px;align-items:center;margin-top:8px}
+.goal-controls input{max-width:125px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.cal-label{text-align:center;color:var(--mu);font-size:.72rem;padding:5px 0}
+.cal-day{min-height:66px;border:1px solid var(--bd);border-radius:9px;padding:6px;background:var(--in);text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal-day:disabled{opacity:.25;cursor:default}
+.cal-day.selected{outline:2px solid var(--ac);border-color:var(--ac)}
+.cal-day.today{box-shadow:inset 0 0 0 1px var(--ok)}
+.cal-day .daynum{font-size:.8rem;font-weight:700}
+.cal-day .spent{font-size:.66rem;color:var(--bad);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-day .earned{font-size:.66rem;color:var(--ok);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day-detail{margin-top:12px;padding:12px;background:var(--in);border:1px solid var(--bd);border-radius:12px}
+
+/* V5 yearly analytics */
+.yearly-controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:12px 0}
+.yearly-controls>div{min-width:150px}
+.yearly-chart{display:grid;gap:12px;margin-top:16px}
+.year-row{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center}
+.year-month{font-size:.8rem;color:var(--mu);font-weight:700}
+.year-bars{display:grid;gap:4px}
+.year-bar-line{display:flex;align-items:center;gap:8px;min-width:0}
+.year-bar-track{height:10px;flex:1;background:var(--bd);border-radius:99px;overflow:hidden;min-width:20px}
+.year-bar-fill{height:100%;width:0;border-radius:99px}
+.year-bar-fill.income{background:var(--ok)}.year-bar-fill.expense{background:var(--ac)}
+.year-bar-value{font-size:.72rem;color:var(--mu);min-width:72px;text-align:right}
+.year-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:.78rem;color:var(--mu)}
+.year-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+@media(max-width:520px){.year-row{grid-template-columns:38px minmax(0,1fr);gap:6px}.year-bar-value{min-width:58px;font-size:.66rem}.year-bar-track{height:8px}}
+
+@media(max-width:760px){.report-grid{grid-template-columns:1fr}.goal-form{grid-template-columns:1fr 1fr}.cal-day{min-height:56px;padding:4px}.cal-day .spent,.cal-day .earned{font-size:.58rem}}
+/* Print only the yearly analytics report when its dedicated button is used. */
+@media print{
+  @page{size:A4 portrait;margin:12mm}
+  body{background:#fff!important;color:#111!important;padding:0!important}
+  body.print-yearly .wrap{max-width:100%!important;margin:0!important}
+  body.print-yearly .wrap>*:not(#yearlyAnalytics){display:none!important}
+  body.print-yearly #yearlyAnalytics{display:block!important;margin:0!important;padding:14px!important;background:#fff!important;color:#111!important;border:0!important;box-shadow:none!important}
+  body.print-yearly #yearlyAnalytics .report-head{margin-bottom:8px}
+  body.print-yearly #yearlyAnalytics h2{font-size:19pt!important;color:#111!important}
+  body.print-yearly #yearlyAnalytics .muted,
+  body.print-yearly #yearlyAnalytics small,
+  body.print-yearly #yearlyAnalytics .year-month,
+  body.print-yearly #yearlyAnalytics .year-bar-value{color:#444!important}
+  body.print-yearly #yearlyAnalytics .yearly-controls{display:flex!important;margin:6px 0 10px!important}
+  body.print-yearly #yearlyAnalytics .yearly-controls label{color:#444!important}
+  body.print-yearly #yearlyAnalytics .yearly-controls select{width:auto!important;min-width:70px!important;padding:2px 4px!important;background:#fff!important;color:#111!important;border:1px solid #aaa!important}
+  body.print-yearly #yearlyAnalytics .mini{background:#fff!important;color:#111!important;border:1px solid #bbb!important;padding:9px!important}
+  body.print-yearly #yearlyAnalytics .mini b{color:#111!important}
+  body.print-yearly #yearlyAnalytics .report-grid{grid-template-columns:repeat(3,1fr)!important;gap:8px!important}
+  body.print-yearly #yearlyAnalytics .year-legend{margin-top:8px!important;color:#333!important}
+  body.print-yearly #yearlyAnalytics .yearly-chart{gap:5px!important;margin-top:8px!important}
+  body.print-yearly #yearlyAnalytics .year-row{grid-template-columns:42px minmax(0,1fr)!important;gap:8px!important;break-inside:avoid}
+  body.print-yearly #yearlyAnalytics .year-bars{gap:2px!important}
+  body.print-yearly #yearlyAnalytics .year-bar-track{height:7px!important;background:#e5e5e5!important}
+  body.print-yearly #yearlyAnalytics .year-bar-value{font-size:8pt!important;min-width:62px!important}
+  body.print-yearly #yearlyAnalytics .report-table{font-size:9pt!important;margin-top:10px!important}
+  body.print-yearly #yearlyAnalytics .report-table th,
+  body.print-yearly #yearlyAnalytics .report-table td{padding:5px 6px!important;border-bottom:1px solid #ddd!important}
+  body.print-yearly #yearlyAnalytics .report-table th{color:#333!important}
+  body.print-yearly #yearlyAnalytics #printYearly{display:none!important}
+  body.print-yearly #yearlyAnalytics .year-bar-fill.income{background:#16a34a!important}
+  body.print-yearly #yearlyAnalytics .year-bar-fill.expense{background:#f59e0b!important}
+  body:not(.print-yearly) .actions,#f,.chips,#search,.edit,.x,#inst,#restoreBtn,#backup,#csv,.goal-form,.goal-controls button,#printReport,#printYearly,.yearly-controls{display:none!important}
+  body:not(.print-yearly) .card,body:not(.print-yearly) .mini,body:not(.print-yearly) .day-detail{background:#fff!important;color:#111!important;border:1px solid #bbb!important;break-inside:avoid}
+  body:not(.print-yearly) .muted,body:not(.print-yearly) small{color:#555!important}
+  body:not(.print-yearly) .wrap{max-width:100%}
+}
+
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.grid,.two{grid-template-columns:1fr}.big{font-size:1.6rem}header .actions{width:100%}header .actions>*{flex:1}#mon{min-width:145px}}
+
+/* Smart insights */
+.alert-good{color:var(--ok)}.alert-warn{color:var(--ac)}.alert-bad{color:var(--bad)}
+#spendingAlerts{margin-bottom:0}
+/* Expense AI assistant */
+.ai-launch{position:fixed;right:22px;bottom:22px;z-index:20;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#1b0f02;font-weight:800;box-shadow:0 8px 28px #0005}
+.ai-panel{position:fixed;right:22px;bottom:82px;width:min(390px,calc(100vw - 28px));height:min(570px,calc(100vh - 115px));z-index:21;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:18px;box-shadow:0 18px 55px #0008;display:none;overflow:hidden;flex-direction:column}
+.ai-panel.open{display:flex}.ai-head{padding:14px 16px;background:var(--in);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;gap:10px}.ai-head b{display:block}.ai-head small{color:var(--mu)}.ai-close{font-size:1.35rem;padding:2px 7px;color:var(--mu)}
+.ai-notice{font-size:.72rem;color:var(--mu);padding:8px 14px;border-bottom:1px solid var(--bd)}.ai-messages{padding:12px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:9px}.ai-msg{max-width:90%;padding:10px 12px;border-radius:13px;font-size:.88rem;white-space:pre-wrap;overflow-wrap:anywhere}.ai-msg.bot{align-self:flex-start;background:var(--in);border:1px solid var(--bd)}.ai-msg.user{align-self:flex-end;background:var(--ac);color:#1b0f02}.ai-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}.ai-suggestions button{border:1px solid var(--bd);border-radius:999px;padding:6px 9px;font-size:.72rem;color:var(--mu)}.ai-form{display:flex;gap:8px;padding:11px;border-top:1px solid var(--bd)}.ai-form input{min-width:0}.ai-form button{flex:none}.ai-launch:focus-visible,.ai-panel button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+@media(max-width:520px){.ai-launch{right:14px;bottom:14px}.ai-panel{right:10px;bottom:72px;width:calc(100vw - 20px);height:min(600px,calc(100vh - 90px))}}
+@media print{#aiWidget{display:none!important}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Expense <span>Tracker</span></h1>
+  <div class="actions">
+    <input type="month" id="mon" aria-label="Month" style="width:auto">
+    <button class="btn" id="inst" hidden>⬇ Install app</button>
+    <button class="btn g" id="csv">Export CSV</button>
+    <button class="btn g" id="backup">Backup JSON</button>
+    <button class="btn g" id="restoreBtn">Restore</button>
+    <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+  </div>
+</header>
+<div class="grid">
+  <div class="card"><small>Income this month</small><div class="big" id="incomeTotal">₹0</div><div id="incomeCount" class="muted">0 income entries</div></div>
+  <div class="card"><small>Expenses this month</small><div class="big" id="tot">₹0</div><div class="bar"><i id="pb"></i></div></div>
+  <div class="card"><small>Net balance</small><div class="big" id="netBalance">₹0</div><div id="netHint" class="muted">Income minus expenses</div></div>
+  <div class="card"><small>Budget left</small><div class="big" id="left">₹0</div><div style="display:flex;gap:8px;align-items:center;margin-top:6px"><label for="bud" style="margin:0">Expense budget ₹</label><input id="bud" type="number" min="0" step="100" style="width:110px;padding:.35rem .6rem"></div><div id="cnt" class="muted" style="margin-top:5px"></div></div>
+</div>
+<div class="card" style="margin-bottom:14px">
+  <div class="section-title"><small>Monthly cash flow</small><span class="muted" id="cashFlowLabel">Income vs expenses</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px">
+    <div><div class="muted" style="margin-bottom:5px">Income</div><div class="bar"><i id="incomeBar" style="background:var(--ok);width:0"></i></div></div>
+    <div><div class="muted" style="margin-bottom:5px">Expenses</div><div class="bar"><i id="expenseBar" style="background:var(--ac);width:0"></i></div></div>
+  </div>
+</div>
+<div class="tip" id="tip">Your spending insights will appear here.</div>
+<section class="card panel" id="smartInsights">
+  <div class="report-head"><div><h2>Smart spending insights</h2><div class="muted">Forecasts and alerts calculated from your saved transactions.</div></div><span class="muted" id="forecastMonth"></span></div>
+  <div class="report-grid">
+    <div class="mini"><small>Projected month-end expenses</small><b id="projectedExpense">₹0</b><div class="muted" id="projectionNote">Based on current pace</div></div>
+    <div class="mini"><small>Budget forecast</small><b id="budgetForecast">—</b><div class="muted" id="budgetForecastNote">Compared with your monthly budget</div></div>
+    <div class="mini"><small>Suggested savings focus</small><b id="savingsFocus">—</b><div class="muted" id="savingsFocusNote">Based on recorded spending</div></div>
+  </div>
+  <div id="spendingAlerts" class="tip" style="margin:12px 0 0">No alerts yet.</div>
+</section>
+
+<section class="card panel" id="monthlyReport">
+  <div class="report-head">
+    <div><h2>Monthly report</h2><div class="muted">12-month income, expenses and net cash flow</div></div>
+    <button class="btn g" id="printReport" type="button">Print / Save PDF</button>
+  </div>
+  <div class="report-grid">
+    <div class="mini"><small>Selected month income</small><b id="repIncome">₹0</b></div>
+    <div class="mini"><small>Selected month expenses</small><b id="repExpense">₹0</b></div>
+    <div class="mini"><small>Selected month net</small><b id="repNet">₹0</b></div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="report-table">
+      <thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Net</th></tr></thead>
+      <tbody id="reportRows"></tbody>
+    </table>
+  </div>
+</section>
+<section class="card panel" id="yearlyAnalytics">
+  <div class="report-head">
+    <div><h2>Yearly analytics</h2><div class="muted">Compare income, expenses and net savings across all 12 months.</div></div>
+    <button class="btn g" id="printYearly" type="button">Print yearly report</button>
+  </div>
+  <div class="yearly-controls"><div><label for="yearSelect">Select year</label><select id="yearSelect" style="min-width:150px"></select></div><span class="muted" id="yearDataHint">Based on transactions saved on this device.</span></div>
+  <div class="report-grid">
+    <div class="mini"><small>Yearly income</small><b id="yearIncome">₹0</b></div>
+    <div class="mini"><small>Yearly expenses</small><b id="yearExpense">₹0</b></div>
+    <div class="mini"><small>Net savings</small><b id="yearNet">₹0</b></div>
+  </div>
+  <div class="mini" style="margin-top:10px"><small>Highest expense month</small><b id="highestExpenseMonth">—</b></div>
+  <div class="year-legend"><span><i style="background:var(--ok)"></i>Income</span><span><i style="background:var(--ac)"></i>Expenses</span></div>
+  <div class="yearly-chart" id="yearlyChart" aria-label="Monthly income and expense comparison"></div>
+  <div style="overflow-x:auto;margin-top:16px">
+    <table class="report-table"><thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Net savings</th></tr></thead><tbody id="yearlyRows"></tbody><tfoot><tr><th>Total</th><th id="yearTotalIncome">₹0</th><th id="yearTotalExpense">₹0</th><th id="yearTotalNet">₹0</th></tr></tfoot></table>
+  </div>
+</section>
+<section class="card panel" id="savingsGoals">
+  <div class="report-head">
+    <div><h2>Savings goals</h2><div class="muted">Set a target and update how much you have saved.</div></div>
+  </div>
+  <form id="goalForm" class="goal-form">
+    <div><label for="goalName">Goal name</label><input id="goalName" maxlength="40" placeholder="e.g. New laptop" required></div>
+    <div><label for="goalTarget">Target (₹)</label><input id="goalTarget" type="number" min="1" step="1" placeholder="20000" required></div>
+    <div><label for="goalSaved">Already saved (₹)</label><input id="goalSaved" type="number" min="0" step="1" value="0" required></div>
+    <button class="btn" type="submit">Add goal</button>
+  </form>
+  <div id="goalList"><div class="empty">No savings goals yet.</div></div>
+</section>
+<section class="card panel" id="calendarPanel">
+  <div class="report-head">
+    <div><h2>Calendar view</h2><div class="muted">Select a day to inspect its transactions.</div></div>
+  </div>
+  <div class="calendar-head"><button class="btn g" id="calPrev" type="button">← Previous</button><b id="calTitle"></b><button class="btn g" id="calNext" type="button">Next →</button></div>
+  <div class="calendar" id="calendarGrid"></div>
+  <div class="day-detail" id="dayDetail">Select a date to view its activity.</div>
+</section>
+
+<div class="two">
+  <div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-title" style="margin-bottom:12px"><small id="formHeading">Add transaction</small><span class="muted" id="storageStatus">Preparing secure local storage…</span></div>
+      <form class="add" id="f">
+        <div><label for="kind">Transaction type</label><select id="kind"><option value="expense">Expense</option><option value="income">Income</option></select></div>
+        <div><label for="amt">Amount (₹)</label><input id="amt" type="number" min="0.01" step="any" placeholder="250" required></div>
+        <div><label for="cat">Category / source</label><select id="cat"></select></div>
+        <div class="full"><label for="note">Note</label><input id="note" maxlength="60" placeholder="Lunch at canteen"></div>
+        <div><label for="dt">Date</label><input id="dt" type="date" required></div>
+        <div class="form-actions" style="align-self:end"><button class="btn" id="submitExpense">+ Add transaction</button><button class="btn g" id="cancelEdit" type="button" hidden>Cancel</button></div>
+      </form>
+    </div>
+    <div class="card"><small>Where it went</small><div class="donut" id="dn"><div><span><b id="dnT">₹0</b>total</span></div></div><div id="leg"></div></div>
+  </div>
+  <div class="card">
+    <div class="section-title"><small>Transactions</small><span class="muted" id="resultCount"></span></div>
+    <input id="search" type="search" placeholder="Search notes or categories…" aria-label="Search transactions">
+    <div class="chips" id="chips"></div><div id="list"></div>
+  </div>
+</div>
+<p class="muted" style="text-align:center;margin-top:16px">Your entries stay on this browser/device. Download a JSON backup regularly.</p>
+</div>
+
+<div id="aiWidget">
+  <button class="ai-launch" id="aiOpen" type="button" aria-expanded="false" aria-controls="aiPanel">✦ Expense AI</button>
+  <section class="ai-panel" id="aiPanel" aria-label="Expense AI assistant">
+    <div class="ai-head"><div><b>✦ Expense AI</b><small id="aiModeLabel">Smart finance assistant · Local AI 2.0</small></div><button class="ai-close" id="aiClose" type="button" aria-label="Close assistant">×</button></div>
+    <div class="ai-notice"><span id="aiPrivacyNotice">Local preview: answers are calculated on this device. No data is sent to an AI service.</span></div>
+    <div class="ai-messages" id="aiMessages" aria-live="polite"><div class="ai-msg bot">Hi! I can analyse your saved income, expenses, categories, budget and savings goals. Ask me something like “How much did I spend this month?”</div></div>
+    <div class="ai-suggestions"><button type="button" data-ai-q="How much did I spend this month?">This month's spending</button><button type="button" data-ai-q="Which category costs me the most?">Top category</button><button type="button" data-ai-q="How much did I save this year?">Yearly savings</button><button type="button" data-ai-q="Compare this month with last month">Compare months</button><button type="button" data-ai-q="Give me saving suggestions">Saving tips</button><button type="button" data-ai-q="Give me a spending analysis">Smart insights</button></div>
+    <form class="ai-form" id="aiForm"><input id="aiInput" type="text" maxlength="240" placeholder="Ask about your money…" autocomplete="off" required><button class="btn" type="submit">Send</button></form>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const CATS={Food:['🍔','#ff9f1c'],Travel:['🚌','#38bdf8'],Study:['📚','#a78bfa'],Fun:['🎮','#f472b6'],Shopping:['🛍️','#34d399'],Other:['✨','#94a3b8']};
+const ICATS={Salary:['💼','#22c55e'],'Pocket money':['💸','#38bdf8'],Gift:['🎁','#a78bfa'],Freelance:['🧑‍💻','#f59e0b'],Other:['✨','#94a3b8']};
+const STORAGE_KEY='tm-expenses', DB_NAME='tm-expenses-db', DB_VERSION=1;
+let S={items:[],budget:5000,goals:[]},filt='All',editingId=null,db=null,persistMode='idb',selectedDay='';
+const R=n=>'₹'+Math.round(Number(n)||0).toLocaleString('en-IN');
+const esc=t=>{const d=document.createElement('div');d.textContent=String(t??'');return d.innerHTML};
+const localISO=d=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};
+const today=new Date();
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),2400)};
+function cleanState(raw){
+  if(!raw||typeof raw!=='object'||!Array.isArray(raw.items))throw new Error('This backup does not contain a valid transactions list.');
+  const items=raw.items.map((x,i)=>{
+    const amt=Number(x.amt),date=String(x.date||'');
+    if(!Number.isFinite(amt)||amt<=0||! /^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error(`Invalid transaction at row ${i+1}.`);
+    const type=x.type==='income'?'income':'expense';
+    const allowed=type==='income'?ICATS:CATS;
+    const cat=allowed[x.cat]?x.cat:'Other';
+    return {id:String(x.id??makeId()),amt,type,cat,note:String(x.note??'').slice(0,60),date};
+  });
+  const budget=Number(raw.budget??5000);
+  if(!Number.isFinite(budget)||budget<0)throw new Error('The budget value is invalid.');
+  const goals=Array.isArray(raw.goals)?raw.goals.map((g,i)=>{
+    const target=Number(g.target),saved=Number(g.saved)||0,name=String(g.name||'').trim().slice(0,40);
+    if(!name||!Number.isFinite(target)||target<=0||!Number.isFinite(saved)||saved<0)throw new Error(`Invalid savings goal at row ${i+1}.`);
+    return {id:String(g.id??makeId()),name,target,saved};
+  }):[];
+  return {items,budget,goals};
+}
+function makeId(){return (crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`)}
+function openDB(){return new Promise((resolve,reject)=>{
+  if(!('indexedDB' in window))return reject(new Error('IndexedDB unavailable'));
+  const req=indexedDB.open(DB_NAME,DB_VERSION);
+  req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains('state'))d.createObjectStore('state',{keyPath:'key'})};
+  req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('Could not open local database'));
+})}
+function idbGet(){return new Promise((resolve,reject)=>{const r=db.transaction('state','readonly').objectStore('state').get('main');r.onsuccess=()=>resolve(r.result?.value??null);r.onerror=()=>reject(r.error)})}
+function idbPut(value){return new Promise((resolve,reject)=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put({key:'main',value});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||new Error('Save aborted'))})}
+function localRead(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?cleanState(JSON.parse(raw)):null}catch(e){console.warn('Could not read legacy data',e);return null}}
+async function initStorage(){
+  try{
+    db=await openDB();const stored=await idbGet();
+    if(stored){S=cleanState(stored)}
+    else{const legacy=localRead();if(legacy){S=legacy;await idbPut(S)}else await idbPut(S)}
+    persistMode='idb';$('#storageStatus').textContent='Saved on this device ✓';
+  }catch(e){
+    console.warn('IndexedDB unavailable; using browser storage',e);
+    persistMode='local';const legacy=localRead();if(legacy)S=legacy;
+    $('#storageStatus').textContent='Browser storage fallback';
+  }
+  $('#bud').value=S.budget;render();
+}
+async function save(){
+  try{
+    if(persistMode==='idb'&&db)await idbPut(S);
+    else localStorage.setItem(STORAGE_KEY,JSON.stringify(S));
+    $('#storageStatus').textContent=persistMode==='idb'?'Saved on this device ✓':'Saved in browser storage';
+    return true;
+  }catch(e){console.error(e);$('#storageStatus').textContent='Save failed — export a backup';toast('Could not save. Export a backup now.');return false}
+}
+function updateCategoryOptions(selected){
+  const type=$('#kind').value, cats=type==='income'?ICATS:CATS;
+  $('#cat').innerHTML=Object.keys(cats).map(c=>`<option>${c}</option>`).join('');
+  if(selected&&cats[selected])$('#cat').value=selected;
+}
+$('#kind').onchange=()=>updateCategoryOptions();
+updateCategoryOptions();
+$('#mon').value=localISO(today).slice(0,7);$('#dt').value=localISO(today);
+
+function monthTotals(mon){
+  const list=S.items.filter(i=>i.date.startsWith(mon));
+  const income=list.filter(i=>i.type==='income').reduce((a,i)=>a+i.amt,0);
+  const expense=list.filter(i=>i.type!=='income').reduce((a,i)=>a+i.amt,0);
+  return {income,expense,net:income-expense};
+}
+function renderReport(mon){
+  const t=monthTotals(mon);
+  $('#repIncome').textContent=R(t.income);$('#repExpense').textContent=R(t.expense);$('#repNet').textContent=R(t.net);
+  $('#repNet').style.color=t.net<0?'var(--bad)':'var(--ok)';
+  const [yy,mm]=mon.split('-').map(Number);
+  const months=[];
+  for(let n=11;n>=0;n--){const d=new Date(yy,mm-1-n,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`)}
+  $('#reportRows').innerHTML=months.map(m=>{const v=monthTotals(m),label=new Date(Number(m.slice(0,4)),Number(m.slice(5,7))-1,1).toLocaleDateString('en-IN',{month:'short',year:'numeric'});return `<tr><td>${label}</td><td>${R(v.income)}</td><td>${R(v.expense)}</td><td style="color:${v.net<0?'var(--bad)':'var(--ok)'}">${R(v.net)}</td></tr>`}).join('');
+}
+function renderYearlyAnalytics(){
+  const select=$('#yearSelect');
+  // Fixed 21-year range: 2020 through 2040 (inclusive).
+  const years=Array.from({length:21},(_,idx)=>String(2020+idx));
+  const current=select.value;
+  select.innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  const defaultYear=String(Math.min(2040,Math.max(2020,today.getFullYear())));
+  select.value=years.includes(current)?current:defaultYear;
+  const year=select.value;
+  const data=Array.from({length:12},(_,idx)=>{
+    const month=String(idx+1).padStart(2,'0'),key=`${year}-${month}`,v=monthTotals(key);
+    return {...v,key,label:new Date(Number(year),idx,1).toLocaleDateString('en-IN',{month:'short'})};
+  });
+  const income=data.reduce((a,x)=>a+x.income,0),expense=data.reduce((a,x)=>a+x.expense,0),net=income-expense;
+  $('#yearIncome').textContent=R(income);$('#yearExpense').textContent=R(expense);$('#yearNet').textContent=R(net);
+  $('#yearNet').style.color=net<0?'var(--bad)':'var(--ok)';
+  const expenseMonths=data.filter(x=>x.expense>0).sort((a,b)=>b.expense-a.expense);
+  $('#highestExpenseMonth').textContent=expenseMonths.length?`${expenseMonths[0].label} ${year} · ${R(expenseMonths[0].expense)}`:'No expenses recorded';
+  const max=Math.max(1,...data.flatMap(x=>[x.income,x.expense]));
+  $('#yearlyChart').innerHTML=data.map(x=>`<div class="year-row"><div class="year-month">${x.label}</div><div class="year-bars"><div class="year-bar-line"><div class="year-bar-track"><div class="year-bar-fill income" style="width:${x.income/max*100}%"></div></div><span class="year-bar-value">${R(x.income)}</span></div><div class="year-bar-line"><div class="year-bar-track"><div class="year-bar-fill expense" style="width:${x.expense/max*100}%"></div></div><span class="year-bar-value">${R(x.expense)}</span></div></div></div>`).join('');
+  $('#yearlyRows').innerHTML=data.map(x=>`<tr><td>${x.label}</td><td>${R(x.income)}</td><td>${R(x.expense)}</td><td style="color:${x.net<0?'var(--bad)':'var(--ok)'}">${R(x.net)}</td></tr>`).join('');
+  $('#yearTotalIncome').textContent=R(income);$('#yearTotalExpense').textContent=R(expense);$('#yearTotalNet').textContent=R(net);$('#yearTotalNet').style.color=net<0?'var(--bad)':'var(--ok)';
+  $('#yearDataHint').textContent=`${S.items.filter(i=>i.date.startsWith(year+'-')).length} transactions in ${year} · Saved on this device`;
+}
+function renderGoals(){
+  $('#goalList').innerHTML=S.goals.length?S.goals.map(g=>{const pct=Math.min(100,g.saved/g.target*100),remaining=Math.max(0,g.target-g.saved);return `<div class="goal"><div class="goal-top"><b>${esc(g.name)}</b><span class="muted">${R(g.saved)} / ${R(g.target)}</span></div><div class="goal-progress"><i style="width:${pct}%"></i></div><div class="muted">${Math.round(pct)}% complete · ${remaining?R(remaining)+' to go':'Goal reached 🎉'}</div><div class="goal-controls"><input type="number" min="0" step="1" placeholder="Add saved ₹" aria-label="Add savings to ${esc(g.name)}" data-goal-add="${esc(g.id)}"><button class="btn g" type="button" data-goal-save="${esc(g.id)}">Add</button><button class="btn g" type="button" data-goal-delete="${esc(g.id)}">Delete</button></div></div>`}).join(''):'<div class="empty">No savings goals yet. Add your first target above.</div>';
+}
+function renderCalendar(mon){
+  if(!selectedDay) selectedDay=localISO(new Date());
+  const [y,m]=mon.split('-').map(Number),first=new Date(y,m-1,1),days=new Date(y,m,0).getDate(),offset=first.getDay();
+  $('#calTitle').textContent=first.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const labels=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let out=labels.map(x=>`<div class="cal-label">${x}</div>`).join('');
+  for(let i=0;i<offset;i++)out+='<button class="cal-day" disabled aria-hidden="true"></button>';
+  for(let day=1;day<=days;day++){
+    const date=`${mon}-${String(day).padStart(2,'0')}`,list=S.items.filter(i=>i.date===date),inc=list.filter(i=>i.type==='income').reduce((a,i)=>a+i.amt,0),exp=list.filter(i=>i.type!=='income').reduce((a,i)=>a+i.amt,0);
+    out+=`<button type="button" class="cal-day ${date===selectedDay?'selected':''} ${date===localISO(today)?'today':''}" data-day="${date}"><span class="daynum">${day}</span>${exp?`<span class="spent">−${R(exp)}</span>`:''}${inc?`<span class="earned">+${R(inc)}</span>`:''}</button>`;
+  }
+  $('#calendarGrid').innerHTML=out;
+  renderDayDetail(selectedDay.startsWith(mon)?selectedDay:`${mon}-01`);
+}
+function renderDayDetail(date){
+  selectedDay=date;const list=S.items.filter(i=>i.date===date).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  const inc=list.filter(i=>i.type==='income').reduce((a,i)=>a+i.amt,0),exp=list.filter(i=>i.type!=='income').reduce((a,i)=>a+i.amt,0);
+  const label=new Date(date+'T00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  $('#dayDetail').innerHTML=`<b>${label}</b><div class="muted" style="margin:4px 0 8px">Income ${R(inc)} · Expenses ${R(exp)} · Net ${R(inc-exp)}</div>${list.length?list.map(i=>`<div class="leg"><span>${i.type==='income'?'＋':'−'} ${esc(i.note||i.cat)} · ${esc(i.cat)}</span><b>${R(i.amt)}</b></div>`).join(''):'<div class="muted">No transactions on this date.</div>'}`;
+}
+
+function renderSmartInsights(mon,spent,budget,expenses){
+  const [y,m]=mon.split('-').map(Number);
+  const now=new Date();
+  const daysInMonth=new Date(y,m,0).getDate();
+  const isCurrent=y===now.getFullYear()&&m===now.getMonth()+1;
+  const elapsed=isCurrent?Math.max(1,now.getDate()):daysInMonth;
+  const projected=isCurrent?spent/elapsed*daysInMonth:spent;
+  const monthLabel=new Date(y,m-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  $('#forecastMonth').textContent=monthLabel;
+  $('#projectedExpense').textContent=R(projected);
+  $('#projectionNote').textContent=isCurrent?`At ${R(spent/elapsed)} per day over ${elapsed} day(s)`:'Completed month · actual expenses';
+  const forecastOver=budget>0&&projected>budget;
+  $('#budgetForecast').textContent=budget>0?(forecastOver?`Over by ${R(projected-budget)}`:`Within budget by ${R(budget-projected)}`):'No budget set';
+  $('#budgetForecast').style.color=forecastOver?'var(--bad)':'var(--ok)';
+  $('#budgetForecastNote').textContent=budget>0?`Monthly budget: ${R(budget)}`:'Set a budget in the dashboard';
+  const by={};expenses.forEach(i=>by[i.cat]=(by[i.cat]||0)+i.amt);
+  const ranked=Object.entries(by).sort((a,b)=>b[1]-a[1]);
+  const focus=ranked[0];
+  $('#savingsFocus').textContent=focus?focus[0]:'Not enough data';
+  $('#savingsFocusNote').textContent=focus?`${R(focus[1])} recorded · review optional spending`:'Add expenses to see a category';
+  const alerts=[];
+  if(!budget)alerts.push('Set a monthly budget to receive budget alerts.');
+  else if(spent>=budget)alerts.push(`Budget exceeded by ${R(spent-budget)}.`);
+  else if(spent>=budget*.8)alerts.push(`${Math.round(spent/budget*100)}% of your monthly budget has been used.`);
+  if(isCurrent&&budget>0&&projected>budget&&spent<budget)alerts.push(`At the current pace, expenses may exceed the budget by ${R(projected-budget)} by month-end.`);
+  if(focus&&spent>0&&focus[1]/spent>=.6)alerts.push(`${focus[0]} accounts for ${Math.round(focus[1]/spent*100)}% of this month's expenses.`);
+  if(!alerts.length)alerts.push('You are within your budget pace. Keep recording transactions for more reliable insights.');
+  $('#spendingAlerts').innerHTML=alerts.map((a,i)=>`<div class="${a.includes('exceed')||a.includes('exceeded')?'alert-bad':a.includes('%')?'alert-warn':'alert-good'}">${i?'• ':'✦ '}${esc(a)}</div>`).join('');
+}
+
+function render(){
+  const mon=$('#mon').value||localISO(today).slice(0,7),all=S.items.filter(i=>i.date.startsWith(mon));
+  const expenses=all.filter(i=>i.type!=='income'),incomes=all.filter(i=>i.type==='income');
+  const spent=expenses.reduce((a,i)=>a+i.amt,0),income=incomes.reduce((a,i)=>a+i.amt,0),net=income-spent,bud=Number(S.budget)||0,pct=bud?spent/bud*100:0;
+  $('#incomeTotal').textContent=R(income);$('#incomeCount').textContent=incomes.length+' income entr'+(incomes.length===1?'y':'ies');
+  $('#tot').textContent=R(spent);$('#netBalance').textContent=R(net);$('#netBalance').style.color=net<0?'var(--bad)':'var(--ok)';
+  $('#netHint').textContent=net>=0?'Positive cash flow':'Expenses exceed income';
+  $('#left').textContent=R(bud-spent);$('#left').style.color=bud-spent<0?'var(--bad)':'';
+  const pb=$('#pb');pb.style.width=Math.min(100,pct)+'%';pb.style.background=pct>=100?'var(--bad)':pct>=80?'var(--ac)':'var(--ok)';
+  const max=Math.max(income,spent,1);$('#incomeBar').style.width=(income/max*100)+'%';$('#expenseBar').style.width=(spent/max*100)+'%';
+  const [y,m]=mon.split('-').map(Number),dim=new Date(y,m,0).getDate(),cur=mon===localISO(today).slice(0,7),days=cur?today.getDate():dim;
+  $('#cnt').textContent=expenses.length+' expense entr'+(expenses.length===1?'y':'ies')+' · Daily avg '+R(spent/Math.max(days,1));
+  const by={};expenses.forEach(i=>{const c=CATS[i.cat]?i.cat:'Other';by[c]=(by[c]||0)+i.amt});
+  const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]);let acc=0;
+  const stops=ent.map(([c,v])=>{const begin=spent?acc/spent*100:0;acc+=v;return `${CATS[c][1]} ${begin}% ${spent?acc/spent*100:0}%`});
+  $('#dn').style.background=ent.length?`conic-gradient(${stops.join(',')})`:'var(--bd)';$('#dnT').textContent=R(spent);
+  $('#leg').innerHTML=ent.length?ent.map(([c,v])=>`<div class="leg"><span><i style="background:${CATS[c][1]}"></i>${c}</span><span>${R(v)} · ${Math.round(v/spent*100)}%</span></div>`).join(''):'<div class="empty" style="padding:6px">No expense data yet</div>';
+  let tip='Add an income or expense transaction to see your cash-flow summary.';
+  if(all.length){const biggest=ent[0];tip=`💡 Monthly cash flow: ${R(income)} income − ${R(spent)} expenses = ${R(net)} net balance.`;if(biggest)tip+=` Biggest expense category: ${biggest[0]} (${Math.round(biggest[1]/spent*100)}%).`;if(bud)tip+=pct>=100?` Expense budget exceeded by ${R(spent-bud)}.`:pct>=80?` You have used ${Math.round(pct)}% of your expense budget.`:''}
+  $('#tip').textContent=tip;
+  renderSmartInsights(mon,spent,bud,expenses);
+  const cats=['All',...Object.keys(CATS)];$('#chips').innerHTML=cats.map(c=>`<button type="button" class="${c===filt?'on':''}" data-c="${c}">${c}</button>`).join('');
+  const q=$('#search').value.trim().toLowerCase();
+  const rows=all.filter(i=>(filt==='All'||(i.type!=='income'&&i.cat===filt))&&(`${i.note} ${i.cat} ${i.type}`.toLowerCase().includes(q))).sort((a,b)=>b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id)));
+  $('#resultCount').textContent=`${rows.length} shown`;
+  $('#list').innerHTML=rows.length?rows.map(i=>{const incomeItem=i.type==='income',palette=incomeItem?ICATS:CATS,c=palette[i.cat]?i.cat:'Other',sign=incomeItem?'+':'−';return `<div class="row"><div class="ic" style="background:${palette[c][1]}26">${palette[c][0]}</div><div class="t"><b>${esc(i.note||c)}</b><small>${incomeItem?'INCOME':'EXPENSE'} · ${esc(c)} · ${new Date(i.date+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</small></div><div class="a" style="color:${incomeItem?'var(--ok)':'var(--tx)'}">${sign}${R(i.amt)}</div><button class="edit" type="button" data-e="${esc(i.id)}" aria-label="Edit transaction">✎</button><button class="x" type="button" data-d="${esc(i.id)}" aria-label="Delete transaction">✕</button></div>`}).join(''):'<div class="empty">No matching transactions.</div>';
+  renderReport(mon);renderYearlyAnalytics();renderGoals();renderCalendar(mon);
+}
+function resetForm(){editingId=null;$('#f').reset();$('#kind').value='expense';updateCategoryOptions();$('#dt').value=localISO(new Date());$('#formHeading').textContent='Add transaction';$('#submitExpense').textContent='+ Add transaction';$('#cancelEdit').hidden=true}
+$('#f').onsubmit=async e=>{
+  e.preventDefault();const amt=Number($('#amt').value),date=$('#dt').value;
+  if(!Number.isFinite(amt)||amt<=0||!date){toast('Enter a valid amount and date.');return}
+  const type=$('#kind').value;
+  if(editingId!==null){const idx=S.items.findIndex(i=>String(i.id)===String(editingId));if(idx>=0)S.items[idx]={...S.items[idx],amt,type,cat:$('#cat').value,note:$('#note').value.trim(),date};}
+  else S.items.push({id:makeId(),amt,type,cat:$('#cat').value,note:$('#note').value.trim(),date});
+  const wasEditing=editingId!==null;const saved=await save();resetForm();const m=date.slice(0,7);if(m!==$('#mon').value)$('#mon').value=m;render();toast(saved?(wasEditing?'Transaction updated ✓':'Transaction added ✓'):'Saved locally with a warning');
+};
+$('#cancelEdit').onclick=resetForm;
+document.addEventListener('click',async e=>{
+  const edit=e.target.closest('[data-e]');if(edit){const item=S.items.find(i=>String(i.id)===edit.dataset.e);if(!item)return;
+    editingId=item.id;$('#kind').value=item.type==='income'?'income':'expense';updateCategoryOptions(item.cat);$('#amt').value=item.amt;$('#note').value=item.note;$('#dt').value=item.date;
+    $('#formHeading').textContent=item.type==='income'?'Edit income':'Edit expense';$('#submitExpense').textContent='Save changes';$('#cancelEdit').hidden=false;window.scrollTo({top:0,behavior:'smooth'});$('#amt').focus();return}
+  const del=e.target.closest('[data-d]');if(del){const item=S.items.find(i=>String(i.id)===del.dataset.d);if(!item)return;
+    if(!confirm(`Delete "${item.note||item.cat}" (${R(item.amt)})?`))return;
+    S.items=S.items.filter(i=>String(i.id)!==del.dataset.d);if(String(editingId)===del.dataset.d)resetForm();await save();render();toast('Transaction deleted');return}
+  const c=e.target.closest('[data-c]');if(c){filt=c.dataset.c;render();return}
+});
+$('#bud').onchange=async e=>{S.budget=Math.max(0,Number(e.target.value)||0);await save();render()};
+$('#mon').onchange=render;$('#search').oninput=render;
+$('#csv').onclick=()=>{
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const data='date,type,category,note,amount\n'+S.items.map(i=>[q(i.date),q(i.type||'expense'),q(i.cat),q(i.note),i.amt].join(',')).join('\n');
+  downloadFile(data,`expenses-${localISO(new Date())}.csv`,'text/csv;charset=utf-8');toast('CSV downloaded ✓');
+};
+$('#backup').onclick=()=>{downloadFile(JSON.stringify({app:'Expense Tracker',version:6,exportedAt:new Date().toISOString(),...S},null,2),`expense-tracker-backup-${localISO(new Date())}.json`,'application/json');toast('JSON backup downloaded ✓')};
+$('#restoreBtn').onclick=()=>$('#restoreFile').click();
+$('#restoreFile').onchange=async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{const parsed=JSON.parse(await file.text());const candidate=cleanState(parsed);
+    if(!confirm(`Restore ${candidate.items.length} transactions and replace the current data on this device? Download a backup first if needed.`))return;
+    S=candidate;const saved=await save();resetForm();$('#bud').value=S.budget;render();toast(saved?'Backup restored ✓':'Restore loaded, but saving failed');
+  }catch(err){alert('Could not restore backup: '+err.message)}finally{e.target.value=''}
+};
+
+$('#goalForm').onsubmit=async e=>{
+  e.preventDefault();const name=$('#goalName').value.trim(),target=Number($('#goalTarget').value),saved=Number($('#goalSaved').value);
+  if(!name||!Number.isFinite(target)||target<=0||!Number.isFinite(saved)||saved<0){toast('Enter a valid goal name and amounts.');return}
+  S.goals.push({id:makeId(),name,target,saved});const ok=await save();$('#goalForm').reset();$('#goalSaved').value='0';renderGoals();toast(ok?'Savings goal added ✓':'Goal added, but saving failed');
+};
+document.addEventListener('click',async e=>{
+  const add=e.target.closest('[data-goal-save]');if(add){const id=add.dataset.goalSave,input=$(`[data-goal-add="${CSS.escape(id)}"]`),amount=Number(input?.value);if(!input||!Number.isFinite(amount)||amount<=0){toast('Enter an amount greater than zero.');return}const goal=S.goals.find(g=>g.id===id);if(!goal)return;goal.saved+=amount;await save();renderGoals();toast('Savings progress updated ✓');return}
+  const del=e.target.closest('[data-goal-delete]');if(del){const goal=S.goals.find(g=>g.id===del.dataset.goalDelete);if(!goal||!confirm(`Delete savings goal "${goal.name}"?`))return;S.goals=S.goals.filter(g=>g.id!==goal.id);await save();renderGoals();toast('Savings goal deleted');return}
+  const day=e.target.closest('[data-day]');if(day){renderDayDetail(day.dataset.day);$('#calendarGrid').querySelectorAll('.cal-day').forEach(b=>b.classList.toggle('selected',b.dataset.day===day.dataset.day));return}
+});
+$('#calPrev').onclick=()=>{const [y,m]=$('#mon').value.split('-').map(Number),d=new Date(y,m-2,1);$('#mon').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;render()};
+$('#calNext').onclick=()=>{const [y,m]=$('#mon').value.split('-').map(Number),d=new Date(y,m,1);$('#mon').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;render()};
+$('#printReport').onclick=()=>window.print();
+$('#yearSelect').onchange=renderYearlyAnalytics;
+$('#printYearly').onclick=()=>{
+  document.body.classList.add('print-yearly');
+  const cleanup=()=>document.body.classList.remove('print-yearly');
+  window.addEventListener('afterprint',cleanup,{once:true});
+  requestAnimationFrame(()=>window.print());
+};
+
+
+// Expense AI: local preview fallback + optional secure Cloudflare Worker connection.
+// Set this to the deployed Worker URL ending in /chat to enable real AI.
+// Never put an OpenAI API key in this file.
+const AI_WORKER_URL='';
+const aiPanel=$('#aiPanel'),aiOpen=$('#aiOpen'),aiMessages=$('#aiMessages');
+const aiHistory=[];
+function aiAddMessage(text,who='bot'){
+  const node=document.createElement('div');node.className=`ai-msg ${who}`;node.textContent=text;aiMessages.appendChild(node);aiMessages.scrollTop=aiMessages.scrollHeight;
+}
+function aiMoney(n){return R(n)}
+function aiBuildContext(){
+  const month=$('#mon').value||localISO(today).slice(0,7);
+  const year=$('#yearSelect').value||String(today.getFullYear());
+  const monthItems=S.items.filter(x=>x.date.startsWith(month));
+  const yearItems=S.items.filter(x=>x.date.startsWith(year+'-'));
+  const sum=(items,type)=>items.filter(x=>type==='income'?x.type==='income':x.type!=='income').reduce((a,x)=>a+x.amt,0);
+  const byCategory={};
+  monthItems.filter(x=>x.type!=='income').forEach(x=>byCategory[x.cat]=(byCategory[x.cat]||0)+x.amt);
+  return {
+    selectedMonth:month, selectedYear:year,
+    monthIncome:sum(monthItems,'income'), monthExpenses:sum(monthItems,'expense'),
+    monthNet:sum(monthItems,'income')-sum(monthItems,'expense'),
+    monthlyBudget:Number(S.budget)||0,
+    monthExpenseEntries:monthItems.filter(x=>x.type!=='income').length,
+    monthIncomeEntries:monthItems.filter(x=>x.type==='income').length,
+    monthExpensesByCategory:byCategory,
+    yearIncome:sum(yearItems,'income'), yearExpenses:sum(yearItems,'expense'),
+    yearNet:sum(yearItems,'income')-sum(yearItems,'expense'),
+    yearlyMonthCount:12,
+    savingsGoals:S.goals.map(g=>({name:g.name,target:g.target,saved:g.saved,remaining:Math.max(0,g.target-g.saved)}))
+  };
+}
+function aiAnswer(question){
+  const q=question.toLowerCase().trim();
+  const mon=$('#mon').value||localISO(today).slice(0,7);
+  const year=$('#yearSelect').value||String(today.getFullYear());
+  const [yy,mm]=mon.split('-').map(Number);
+  const monthName=new Date(yy,mm-1,1).toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const monthList=S.items.filter(x=>x.date.startsWith(mon));
+  const isIncome=x=>x.type==='income';
+  const total=(items,kind)=>items.filter(x=>kind==='income'?isIncome(x):!isIncome(x)).reduce((a,x)=>a+x.amt,0);
+  const monthIncome=total(monthList,'income'),monthExpense=total(monthList,'expense'),monthNet=monthIncome-monthExpense;
+  const yearList=S.items.filter(x=>x.date.startsWith(year+'-'));
+  const yearIncome=total(yearList,'income'),yearExpense=total(yearList,'expense');
+  const budget=Math.max(0,Number(S.budget)||0),remaining=budget-monthExpense;
+  const prevDate=new Date(yy,mm-2,1),prevKey=`${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
+  const prevList=S.items.filter(x=>x.date.startsWith(prevKey));
+  const prevExpense=total(prevList,'expense'),prevIncome=total(prevList,'income');
+  const categories={};
+  monthList.filter(x=>!isIncome(x)).forEach(x=>categories[x.cat]=(categories[x.cat]||0)+x.amt);
+  const ranked=Object.entries(categories).sort((a,b)=>b[1]-a[1]);
+  const top=ranked[0];
+  const money=aiMoney;
+  if(/^(hi|hello|hey|namaste|hii)\b/.test(q))return 'Hey! Main tumhare saved transactions analyse kar sakta hoon. Monthly spending, budget, category, month comparison, yearly savings ya saving goals ke baare mein poochho.';
+  if(/(predict|forecast|projected|month.end|estimate|andaaza)/.test(q)){
+    const [py,pm]=mon.split('-').map(Number),now=new Date(),days=new Date(py,pm,0).getDate(),elapsed=(py===now.getFullYear()&&pm===now.getMonth()+1)?Math.max(1,now.getDate()):days;
+    const projection=(py===now.getFullYear()&&pm===now.getMonth()+1)?monthExpense/elapsed*days:monthExpense;
+    return `${monthName} projected expenses: ${money(projection)}\nRecorded so far: ${money(monthExpense)}\nEstimate uses your average daily spending (${money(monthExpense/elapsed)} per day). It is a simple estimate, not a guarantee.`;
+  }
+  if(/(alert|warning|risk|budget status)/.test(q)){
+    if(!budget)return 'No monthly budget is set. Add one in the Budget card to enable budget alerts.';
+    const pct=monthExpense/budget*100;
+    return `Budget status for ${monthName}: ${money(monthExpense)} spent of ${money(budget)} (${Math.round(pct)}%).\n${monthExpense>=budget?'You have exceeded the budget by '+money(monthExpense-budget)+'.':pct>=80?'Warning: only '+money(budget-monthExpense)+' remains.':'You are currently within budget.'}`;
+  }
+  if(/(insight|analyse|analysis|summary|overview|kya haal|kaisa chal)/.test(q)){
+    const budgetLine=budget?`Budget ka ${Math.round(monthExpense/budget*100)}% use hua hai.`:'Abhi monthly budget set nahi hai.';
+    const categoryLine=top?`Sabse zyada ${top[0]} par ${money(top[1])} kharch hue.`:'Abhi koi expense record nahi hai.';
+    const trend=prevExpense?`Pichhle month ke ${money(prevExpense)} ke comparison mein spending ${monthExpense>=prevExpense?'+' : '−'}${money(Math.abs(monthExpense-prevExpense))} hai.`:'Pichhle month ka comparison data available nahi hai.';
+    return `${monthName} ka snapshot:\nIncome: ${money(monthIncome)}\nExpenses: ${money(monthExpense)}\nNet cash flow: ${money(monthNet)}\n${categoryLine}\n${budgetLine}\n${trend}`;
+  }
+  if(/(compare|comparison|previous month|last month|pichhle mahine|pichle month|pichhle month)/.test(q)){
+    const delta=monthExpense-prevExpense;
+    const pct=prevExpense?Math.round(Math.abs(delta)/prevExpense*100):null;
+    return `${monthName} vs ${prevDate.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}:\nCurrent expenses: ${money(monthExpense)}\nPrevious expenses: ${money(prevExpense)}\n${delta>0?'Spending badhi':delta<0?'Spending ghati':'Spending same rahi'} ${money(Math.abs(delta))}${pct===null?' (percentage comparison ke liye previous month spending zero thi).':` (${pct}%).`}`;
+  }
+  if(/(suggest|suggestion|save more|save money|kaise bach|bachat|reduce|kam kar)/.test(q)){
+    if(!monthExpense)return `Abhi ${monthName} mein expenses record nahi hain. Transactions add karoge toh main category-wise saving suggestions de sakta hoon.`;
+    const ideas=[];
+    if(top)ideas.push(`${top[0]} tumhari top category hai (${money(top[1])}). Is category ke optional purchases ko plan karna useful ho sakta hai.`);
+    if(budget&&monthExpense>=budget*.8)ideas.push(`Budget ka ${Math.round(monthExpense/budget*100)}% use ho chuka hai; remaining budget ${money(remaining)} hai.`);
+    if(ranked.length>1)ideas.push(`Top 2 categories (${ranked.slice(0,2).map(x=>x[0]).join(', ')}) milkar ${money(ranked.slice(0,2).reduce((a,x)=>a+x[1],0))} hain. In entries ko review karo.`);
+    if(!ideas.length)ideas.push('Har transaction ko note aur category ke saath add karo; isse spending patterns samajhna easy hoga.');
+    return 'Possible ways to improve savings:\n• '+ideas.join('\n• ')+'\n\nYe suggestions tumhare recorded data par based hain; zaroori kharch kam karne ki salah nahi hai.';
+  }
+  if(/(goal|target|saving goal|savings goal|lakshya)/.test(q)){
+    if(!S.goals.length)return 'Abhi koi savings goal add nahi hai. Savings Goals section mein target add karo, phir main progress aur remaining amount bata sakta hoon.';
+    return 'Savings goals:\n'+S.goals.map(g=>`${g.name}: ${money(g.saved)} / ${money(g.target)} · ${Math.round(Math.min(100,g.saved/g.target*100))}% complete · ${money(Math.max(0,g.target-g.saved))} remaining`).join('\n')+'\n\nTip: choose a realistic monthly contribution that fits after essential expenses.';
+  }
+  if(/(highest|most|top|biggest|sabse zyada|maximum)/.test(q)&&/(categor|spend|expense|kharch|paisa)/.test(q)){
+    return top?`Tumhari highest expense category ${monthName} mein ${top[0]} hai: ${money(top[1])} (${monthExpense?Math.round(top[1]/monthExpense*100):0}% of expenses).`:`${monthName} mein koi expense recorded nahi hai.`;
+  }
+  if(/(budget|left|remaining|limit|kitna bacha)/.test(q)){
+    if(!budget)return 'Monthly expense budget abhi ₹0 hai. Dashboard ke Budget card mein apna budget set karo.';
+    return `${monthName} budget: ${money(budget)}\nSpent: ${money(monthExpense)}\n${remaining>=0?'Remaining: '+money(remaining):'Over budget by: '+money(-remaining)}\nBudget used: ${Math.round(monthExpense/budget*100)}%.`+(monthExpense>=budget?' Budget limit reach/cross ho gayi hai.':'');
+  }
+  if(/(year|annual|this year|iss saal|is saal|yearly)/.test(q)){
+    const net=yearIncome-yearExpense;
+    return `${year} summary:\nIncome: ${money(yearIncome)}\nExpenses: ${money(yearExpense)}\nNet savings: ${money(net)}\n${yearList.length} transactions recorded.`;
+  }
+  if(/(income|earned|salary|kamai|aaye)/.test(q))return `${monthName} income ${money(monthIncome)} hai, ${monthList.filter(isIncome).length} income entries se.`;
+  if(/(expense|spend|spent|spending|kharch)/.test(q))return `${monthName} expenses ${money(monthExpense)} hain (${monthList.filter(x=>!isIncome(x)).length} entries). Income ${money(monthIncome)} hai, isliye net cash flow ${money(monthNet)} hai.`;
+  if(/(net|balance|save|saving|bachat)/.test(q))return `${monthName}: income ${money(monthIncome)} − expenses ${money(monthExpense)} = net cash flow ${money(monthNet)}.`;
+  if(/(transaction|entry|entries|kitni entries)/.test(q))return `${monthName} mein ${monthList.length} transactions hain: ${monthList.filter(isIncome).length} income aur ${monthList.filter(x=>!isIncome(x)).length} expenses.`;
+  return 'Main ye analyse kar sakta hoon: monthly spending, income, budget remaining, top category, previous-month comparison, yearly savings, goals aur saving suggestions. Example: “Compare this month with last month” ya “How can I save more?”';
+}
+async function aiSend(text){
+  const q=text.trim();if(!q)return;
+  aiAddMessage(q,'user');
+  aiHistory.push({role:'user',content:q});
+  const pending=document.createElement('div');pending.className='ai-msg bot';pending.textContent=AI_WORKER_URL?'Thinking…':'Analysing your spending…';aiMessages.appendChild(pending);aiMessages.scrollTop=aiMessages.scrollHeight;
+  try{
+    let answer;
+    if(AI_WORKER_URL){
+      const response=await fetch(AI_WORKER_URL,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({question:q,context:aiBuildContext(),history:aiHistory.slice(-8,-1)})
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.error||'AI request failed.');
+      answer=data.answer;
+    }else{
+      await new Promise(resolve=>setTimeout(resolve,180));
+      answer=aiAnswer(q);
+    }
+    pending.textContent=answer;
+    aiHistory.push({role:'assistant',content:answer});
+  }catch(err){
+    pending.textContent=err.message||'Something went wrong. Please try again.';
+  }
+  aiMessages.scrollTop=aiMessages.scrollHeight;
+}
+function aiSetMode(){
+  const live=Boolean(AI_WORKER_URL);
+  $('#aiModeLabel').textContent=live?'OpenAI-powered · Secure Worker':'Smart finance assistant · Local AI 2.0';
+  $('#aiPrivacyNotice').textContent=live
+    ?'AI mode: a compact financial summary and your question are sent securely to the configured AI service. Transaction notes and IDs are not sent.'
+    :'Local preview: answers are calculated on this device. No data is sent to an AI service.';
+}
+aiSetMode();
+aiOpen.onclick=()=>{const open=aiPanel.classList.toggle('open');aiOpen.setAttribute('aria-expanded',String(open));if(open)$('#aiInput').focus()};
+$('#aiClose').onclick=()=>{aiPanel.classList.remove('open');aiOpen.setAttribute('aria-expanded','false')};
+$('#aiForm').onsubmit=e=>{e.preventDefault();const input=$('#aiInput');aiSend(input.value);input.value='';input.focus()};
+document.querySelectorAll('[data-ai-q]').forEach(b=>b.addEventListener('click',()=>aiSend(b.dataset.aiQ)));
+
+function downloadFile(content,name,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+// Sample data is intentionally not inserted automatically.
+/* PWA offline support + install button */
+if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('Service worker registration failed',err)));
+let dp=null;const ib=$('#inst'),ios=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;ib.hidden=false});
+if(ios&&!standalone)ib.hidden=false;
+ib.onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;ib.hidden=true}else toast('Tap Share ⬆ then “Add to Home Screen”')};
+addEventListener('appinstalled',()=>{ib.hidden=true;toast('App installed ✓')});
+initStorage();
+</script>
+</body>
+</html>
