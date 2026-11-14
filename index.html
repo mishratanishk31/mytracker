@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Expense Tracker V6 · Smart Insights</title>
+<title>Expense Tracker V7 · Smart Insights</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0a0705">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -146,10 +146,150 @@ label{font-size:.72rem;color:var(--mu);display:block;margin-bottom:3px}
 .ai-notice{font-size:.72rem;color:var(--mu);padding:8px 14px;border-bottom:1px solid var(--bd)}.ai-messages{padding:12px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:9px}.ai-msg{max-width:90%;padding:10px 12px;border-radius:13px;font-size:.88rem;white-space:pre-wrap;overflow-wrap:anywhere}.ai-msg.bot{align-self:flex-start;background:var(--in);border:1px solid var(--bd)}.ai-msg.user{align-self:flex-end;background:var(--ac);color:#1b0f02}.ai-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}.ai-suggestions button{border:1px solid var(--bd);border-radius:999px;padding:6px 9px;font-size:.72rem;color:var(--mu)}.ai-form{display:flex;gap:8px;padding:11px;border-top:1px solid var(--bd)}.ai-form input{min-width:0}.ai-form button{flex:none}.ai-launch:focus-visible,.ai-panel button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 @media(max-width:520px){.ai-launch{right:14px;bottom:14px}.ai-panel{right:10px;bottom:72px;width:calc(100vw - 20px);height:min(600px,calc(100vh - 90px))}}
 @media print{#aiWidget{display:none!important}}
+/* MyTracker Authentication Screen */
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg);
+  overflow-y: auto;
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  box-shadow: 0 15px 45px rgba(0,0,0,.15);
+}
 
+.auth-card h1 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.auth-card h1 span {
+  color: var(--ac);
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--mu);
+  margin-bottom: 25px;
+}
+
+#authHeading {
+  margin-bottom: 8px;
+}
+
+#authMessage {
+  color: var(--mu);
+  margin-bottom: 20px;
+}
+
+#authForm input {
+  width: 100%;
+  padding: 13px;
+  margin-bottom: 14px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--in);
+  color: var(--tx);
+}
+
+#authForm button,
+#googleLogin {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ac);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#googleLogin {
+  background: transparent;
+  border: 1px solid var(--bd);
+  color: var(--tx);
+}
+
+#forgotPassword,
+#authToggle {
+  background: none;
+  border: none;
+  color: var(--ac);
+  cursor: pointer;
+  padding: 8px;
+}
+
+#authToggleText {
+  text-align: center;
+  margin-top: 18px;
+}
+
+#authStatus {
+  margin-top: 15px;
+  text-align: center;
+  color: var(--mu);
+}
 </style>
 </head>
 <body>
+  <!-- MyTracker Authentication -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <h1>My<span>Tracker</span></h1>
+    <p class="auth-subtitle">Your money. Your control.</p>
+
+    <h2 id="authHeading">Welcome Back</h2>
+    <p id="authMessage">Sign in to access your expenses.</p>
+
+    <form id="authForm">
+      <input
+        type="email"
+        id="authEmail"
+        placeholder="Email address"
+        autocomplete="email"
+        required
+      >
+
+      <input
+        type="password"
+        id="authPassword"
+        placeholder="Password"
+        autocomplete="current-password"
+        minlength="8"
+        required
+      >
+
+      <button type="submit" id="authSubmit">Sign In</button>
+    </form>
+
+    <button type="button" id="googleLogin">
+      Continue with Google
+    </button>
+
+    <button type="button" id="forgotPassword">
+      Forgot Password?
+    </button>
+
+    <p id="authToggleText">
+      Don't have an account?
+      <button type="button" id="authToggle">Create Account</button>
+    </p>
+
+    <p id="authStatus" role="status"></p>
+  </div>
+</div>
 <div class="wrap">
 <header>
   <h1>Expense <span>Tracker</span></h1>
@@ -160,6 +300,7 @@ label{font-size:.72rem;color:var(--mu);display:block;margin-bottom:3px}
     <button class="btn g" id="backup">Backup JSON</button>
     <button class="btn g" id="restoreBtn">Restore</button>
     <input id="restoreFile" type="file" accept="application/json,.json" hidden>
+    <button class="btn" id="logoutBtn" type="button">Logout</button>
   </div>
 </header>
 <div class="grid">
@@ -388,8 +529,50 @@ function renderYearlyAnalytics(){
   $('#yearTotalIncome').textContent=R(income);$('#yearTotalExpense').textContent=R(expense);$('#yearTotalNet').textContent=R(net);$('#yearTotalNet').style.color=net<0?'var(--bad)':'var(--ok)';
   $('#yearDataHint').textContent=`${S.items.filter(i=>i.date.startsWith(year+'-')).length} transactions in ${year} · Saved on this device`;
 }
-function renderGoals(){
-  $('#goalList').innerHTML=S.goals.length?S.goals.map(g=>{const pct=Math.min(100,g.saved/g.target*100),remaining=Math.max(0,g.target-g.saved);return `<div class="goal"><div class="goal-top"><b>${esc(g.name)}</b><span class="muted">${R(g.saved)} / ${R(g.target)}</span></div><div class="goal-progress"><i style="width:${pct}%"></i></div><div class="muted">${Math.round(pct)}% complete · ${remaining?R(remaining)+' to go':'Goal reached 🎉'}</div><div class="goal-controls"><input type="number" min="0" step="1" placeholder="Add saved ₹" aria-label="Add savings to ${esc(g.name)}" data-goal-add="${esc(g.id)}"><button class="btn g" type="button" data-goal-save="${esc(g.id)}">Add</button><button class="btn g" type="button" data-goal-delete="${esc(g.id)}">Delete</button></div></div>`}).join(''):'<div class="empty">No savings goals yet. Add your first target above.</div>';
+function renderGoals() {
+  $('#goalList').innerHTML = S.goals.length
+    ? S.goals.map(g => {
+        const pct = Math.min(100, g.saved / g.target * 100);
+        const remaining = Math.max(0, g.target - g.saved);
+
+        return `
+          <div class="goal">
+            <div class="goal-top">
+              <b>${esc(g.name)}</b>
+              <span class="muted">${R(g.saved)} / ${R(g.target)}</span>
+            </div>
+
+            <div class="goal-progress">
+              <i style="width:${pct}%"></i>
+            </div>
+
+            <div class="muted">
+              ${Math.round(pct)}% complete ·
+              ${remaining ? R(remaining) + ' to go' : 'Goal reached 🎉'}
+            </div>
+
+            <div class="goal-controls">
+              <input
+                type="number"
+                id="goal-add-${esc(g.id)}"
+                name="goal-add-${esc(g.id)}"
+                min="0"
+                step="1"
+                placeholder="Add saved ₹"
+                aria-label="Add savings to ${esc(g.name)}"
+                data-goal-add="${esc(g.id)}"
+              >
+
+              <button class="btn g" type="button"
+                data-goal-save="${esc(g.id)}">Add</button>
+
+              <button class="btn g" type="button"
+                data-goal-delete="${esc(g.id)}">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<div class="empty">No savings goals yet. Add your first target above.</div>';
 }
 function renderCalendar(mon){
   if(!selectedDay) selectedDay=localISO(new Date());
@@ -683,5 +866,6 @@ ib.onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;ib.hidden=tr
 addEventListener('appinstalled',()=>{ib.hidden=true;toast('App installed ✓')});
 initStorage();
 </script>
+<script type="module" src="./auth.js"></script>
 </body>
 </html>
